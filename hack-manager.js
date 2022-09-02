@@ -2,7 +2,7 @@
 
 /** @param {NS} ns **/
 import { multiscan, gainRootAccess } from "utils.js";
-var weaken_threads;
+
 function maxElement(arr) {
 	let max = 0;
 	for (let i = 0; i < arr.length; i++) {
@@ -139,15 +139,16 @@ async function little_hack(ns, hack_target, weaken_threads, grow_threads, hack_t
 	})
 	let sec_increase;
 	let startTime = Date.now();
-	while (grow_threads * ns.getScriptRam('targeted-grow.js', 'home') + hack_threads * ns.getScriptRam('targeted-hack.js', 'home') + weaken_threads * ns.getScriptRam('targeted-weaken.js', 'home') > usable_RAM - host_servers.length) {
+	while(grow_threads * ns.getScriptRam('targeted-grow.js', 'home') + hack_threads * ns.getScriptRam('targeted-hack.js', 'home') + weaken_threads * ns.getScriptRam('targeted-weaken.js', 'home') > usable_RAM - host_servers.length) {
 		c += 1;
 		grow_threads = Math.floor(ns.growthAnalyze(hack_target, 1 / (1 - 1 / c)));
 		hack_threads = Math.floor(ns.hackAnalyzeThreads(hack_target, ns.getServerMoneyAvailable(hack_target) / c)) / ns.hackAnalyzeChance(hack_target);
 		sec_increase = ns.hackAnalyzeSecurity(hack_threads) + ns.growthAnalyzeSecurity(grow_threads);
+		weaken_threads = 1;
 		weaken_threads = Math.ceil(sec_increase * 1.1 / ns.weakenAnalyze(weaken_threads));
 		await ns.sleep(1);
 		if (Date.now() > startTime + 240000) {
-			throw (Error("line 65, loop longer than 2 minutes either need more RAM or change value of c decrement"));
+			throw(Error("line 65, loop longer than 2 minutes either need more RAM or change value of c decrement"));
 		}
 	}
 
